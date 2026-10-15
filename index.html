@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Together 초대</title>
+  <meta property="og:title" content="Together 초대" />
+  <meta property="og:description" content="눌러서 Together 앱에서 함께 쓰는 리스트·알림·모임에 들어오세요." />
+  <meta name="robots" content="noindex" />
+  <style>
+    :root { --bg: #fff; --text: #2b2b2b; --mute: #8a8a8a; --line: rgba(43,43,43,.06); --btn: #2b2b2b; }
+    @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg: #161616; --text: #eee; --mute: #9a9a9a; --line: rgba(255,255,255,.06); --btn: #eee; } }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px 16px;
+      background-color: var(--bg); color: var(--text);
+      background-image: linear-gradient(to right, var(--line) 1px, transparent 1px), linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+      background-size: 16px 16px;
+      font: 16px/1.5 -apple-system, "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+    }
+    main { width: min(420px, 100%); text-align: center; }
+    h1 { font-size: 22px; margin: 0 0 6px; }
+    p { margin: 0 0 18px; color: var(--mute); font-size: 14px; }
+    .open {
+      display: block; width: 100%; padding: 16px; border: 0; border-radius: 14px;
+      background: var(--btn); color: var(--bg); font: inherit; font-weight: 800; font-size: 17px; text-decoration: none;
+    }
+    .code { margin-top: 22px; padding: 14px; border: 1.5px dashed var(--mute); border-radius: 12px; }
+    .code b { display: block; font-size: 24px; letter-spacing: .08em; margin-top: 4px; }
+    .hint { margin-top: 18px; font-size: 12.5px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1 id="title">Together 초대</h1>
+    <p id="sub">아래 버튼을 누르면 Together 앱에서 열려요.</p>
+    <a class="open" id="open" href="#">Together 앱에서 열기</a>
+    <div class="code" id="codebox" hidden>모임 초대 코드<b id="code"></b></div>
+    <p class="hint">
+      앱이 열리지 않으면 Together 앱 › 설정 › 초대 받기에 카카오톡으로 받은 메시지를 통째로 붙여 넣어 주세요.
+    </p>
+  </main>
+  <script>
+    // ?join=list&id=…&code=…&t=제목 → com.checklist.app://invite?join=…
+    // 안드로이드는 intent:// 주소로 열어야 카카오톡·크롬 안의 브라우저에서 앱으로 넘어갑니다.
+    (function () {
+      var q = new URLSearchParams(location.search);
+      var kind = q.get('join') || '';
+      var id = q.get('id') || '';
+      var code = q.get('code') || '';
+      var title = q.get('t') || '';
+      var label = { circle: '모임', list: '리스트', remind: '알림', habit: '습관' }[kind] || '';
+      if (!/^(circle|list|remind|habit)$/.test(kind) || !id) {
+        document.getElementById('sub').textContent = '초대 정보가 없어요. 받은 메시지를 다시 확인해 주세요.';
+        document.getElementById('open').hidden = true;
+        return;
+      }
+      if (title) document.getElementById('title').textContent = '‘' + title + '’ ' + label + ' 초대';
+      if (code) {
+        document.getElementById('codebox').hidden = false;
+        document.getElementById('code').textContent = code.length === 8 ? code.slice(0, 4) + '-' + code.slice(4) : code;
+      }
+      var query = 'join=' + encodeURIComponent(kind) + '&id=' + encodeURIComponent(id) + (code ? '&code=' + encodeURIComponent(code) : '');
+      var android = /android/i.test(navigator.userAgent);
+      var url = android
+        ? 'intent://invite?' + query + '#Intent;scheme=com.checklist.app;package=com.checklist.app;end'
+        : 'com.checklist.app://invite?' + query;
+      var a = document.getElementById('open');
+      a.href = url;
+      // 바로 열어 보고, 막히면 버튼을 누르면 됩니다 (브라우저마다 누르기 전 자동 이동을 막기도 합니다).
+      setTimeout(function () { location.href = url; }, 300);
+    })();
+  </script>
+</body>
+</html>
