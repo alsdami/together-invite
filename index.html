@@ -25,8 +25,6 @@
       display: block; width: 100%; padding: 16px; border: 0; border-radius: 14px;
       background: var(--btn); color: var(--bg); font: inherit; font-weight: 800; font-size: 17px; text-decoration: none;
     }
-    .code { margin-top: 22px; padding: 14px; border: 1.5px dashed var(--mute); border-radius: 12px; }
-    .code b { display: block; font-size: 24px; letter-spacing: .08em; margin-top: 4px; }
     .hint { margin-top: 18px; font-size: 12.5px; }
   </style>
 </head>
@@ -35,10 +33,8 @@
     <h1 id="title">Together 초대</h1>
     <p id="sub">아래 버튼을 누르면 Together 앱에서 열려요.</p>
     <a class="open" id="open" href="#">Together 앱에서 열기</a>
-    <div class="code" id="codebox" hidden>모임 초대 코드<b id="code"></b></div>
     <p class="hint">
-      앱이 열리지 않으면 Together 앱이 최신 버전인지 확인해 주세요.
-      모임 초대라면 Together 앱 › 캘린더 › 모임 관리 › 코드로 참여하기에 위 코드를 넣어도 돼요.
+      앱이 열리지 않으면 Together 앱이 설치되어 있고 최신 버전인지 확인해 주세요.
     </p>
   </main>
   <script>
@@ -57,11 +53,9 @@
         return;
       }
       if (title) document.getElementById('title').textContent = '‘' + title + '’ ' + label + ' 초대';
-      if (code) {
-        document.getElementById('codebox').hidden = false;
-        document.getElementById('code').textContent = code.length === 8 ? code.slice(0, 4) + '-' + code.slice(4) : code;
-      }
-      var query = 'join=' + encodeURIComponent(kind) + '&id=' + encodeURIComponent(id) + (code ? '&code=' + encodeURIComponent(code) : '');
+      // 모임 이름(t)도 앱으로 넘겨 확인 창에 '‘시골애들’ 모임에 초대받았어요' 처럼 보여 줍니다.
+      var query = 'join=' + encodeURIComponent(kind) + '&id=' + encodeURIComponent(id) +
+        (code ? '&code=' + encodeURIComponent(code) : '') + (title ? '&t=' + encodeURIComponent(title) : '');
       var android = /android/i.test(navigator.userAgent);
       var url = android
         ? 'intent://invite?' + query + '#Intent;scheme=com.checklist.app;package=com.checklist.app;end'
