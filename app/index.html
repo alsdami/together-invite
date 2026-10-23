@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Together 앱 다운로드</title>
+  <meta name="description" content="함께 쓰는 체크리스트·알림·습관·달력 — Together 안드로이드 앱 내려받기" />
+  <style>
+    :root { --bg: #fff; --text: #2b2b2b; --mute: #8a8a8a; --line: rgba(43,43,43,.06); --card: #fff; --border: rgba(43,43,43,.12); --btn: #2b2b2b; --btn-text: #fff; }
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) { --bg: #161616; --text: #eee; --mute: #9a9a9a; --line: rgba(255,255,255,.06); --card: #1f1f1f; --border: rgba(255,255,255,.12); --btn: #eee; --btn-text: #161616; }
+    }
+    :root[data-theme="dark"] { --bg: #161616; --text: #eee; --mute: #9a9a9a; --line: rgba(255,255,255,.06); --card: #1f1f1f; --border: rgba(255,255,255,.12); --btn: #eee; --btn-text: #161616; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; padding: 32px 16px; color: var(--text);
+      background-color: var(--bg);
+      background-image: linear-gradient(to right, var(--line) 1px, transparent 1px), linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+      background-size: 16px 16px;
+      font: 16px/1.55 -apple-system, "Pretendard", "Noto Sans KR", system-ui, sans-serif;
+    }
+    main { width: min(440px, 100%); margin: 0 auto; }
+    .logo { width: 64px; height: 64px; border-radius: 18px; background: var(--btn); color: var(--btn-text); display: grid; place-items: center; font-size: 30px; font-weight: 800; }
+    h1 { font-size: 26px; margin: 16px 0 4px; }
+    .sub { color: var(--mute); margin: 0 0 22px; }
+    .dl {
+      display: block; width: 100%; padding: 17px; border-radius: 14px; text-align: center;
+      background: var(--btn); color: var(--btn-text); text-decoration: none; font-weight: 800; font-size: 18px;
+    }
+    .meta { text-align: center; color: var(--mute); font-size: 13px; margin-top: 8px; min-height: 1.4em; }
+    .card { margin-top: 26px; padding: 16px 18px; border-radius: 14px; background: var(--card); border: 1px solid var(--border); }
+    .card h2 { font-size: 15px; margin: 0 0 8px; }
+    ol { margin: 0; padding-left: 20px; }
+    li { margin: 4px 0; font-size: 14.5px; }
+    .note { color: var(--mute); font-size: 13px; margin-top: 10px; }
+    .feat { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 0; padding: 0; list-style: none; }
+    .feat li { margin: 0; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="logo" aria-hidden="true">✓</div>
+    <h1>Together</h1>
+    <p class="sub">함께 쓰는 체크리스트 · 알림 · 습관 · 달력</p>
+
+    <a class="dl" href="https://github.com/alsdami/together-invite/releases/download/app/Together.apk">안드로이드 앱 내려받기</a>
+    <div class="meta" id="meta"></div>
+
+    <div class="card">
+      <h2>설치하는 방법</h2>
+      <ol>
+        <li>위 버튼을 눌러 <b>Together.apk</b>를 내려받아요.</li>
+        <li>다운로드 알림이나 ‘내 파일 › 다운로드’에서 파일을 열어요.</li>
+        <li>“출처를 알 수 없는 앱” 창이 뜨면 <b>설정 › 이 출처 허용</b>을 켜고 돌아와요.</li>
+        <li><b>설치</b> → <b>열기</b>를 누르고 구글 계정으로 로그인해요.</li>
+      </ol>
+      <p class="note">이미 설치되어 있으면 같은 방법으로 덮어 설치하면 돼요. 로그인과 데이터는 그대로 남아요.</p>
+    </div>
+
+    <div class="card">
+      <h2>이런 걸 할 수 있어요</h2>
+      <ul class="feat">
+        <li>✅ 함께 쓰는 장보기·준비물</li>
+        <li>🔔 시간마다 울리는 알림</li>
+        <li>📅 모임의 되는 날 맞추기</li>
+        <li>🏠 홈 화면 위젯</li>
+      </ul>
+    </div>
+
+    <p class="note" style="text-align:center">안드로이드 전용이에요. 아이폰은 아직 지원하지 않아요.</p>
+  </main>
+  <script>
+    // 최신 버전 날짜·크기 — GitHub 릴리스 정보에서 읽습니다. 못 읽어도 내려받기는 그대로 됩니다.
+    fetch('https://api.github.com/repos/alsdami/together-invite/releases/tags/app')
+      .then(function (r) { return r.ok ? r.json() : null })
+      .then(function (rel) {
+        var a = rel && (rel.assets || []).filter(function (x) { return x.name === 'Together.apk' })[0];
+        if (!a) return;
+        var d = new Date(a.updated_at);
+        var mb = (a.size / 1024 / 1024).toFixed(1);
+        document.getElementById('meta').textContent =
+          '최신 버전 · ' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일 ' +
+          ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2) + ' · ' + mb + 'MB';
+      })
+      .catch(function () {});
+  </script>
+</body>
+</html>
