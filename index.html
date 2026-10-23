@@ -3,9 +3,11 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Together 초대</title>
-  <meta property="og:title" content="Together 초대" />
-  <meta property="og:description" content="눌러서 Together 앱에서 함께 쓰는 리스트·알림·모임에 들어오세요." />
+  <!--
+    미리보기 정보(og:title·og:description·<title>)를 일부러 두지 않습니다 — 있으면 카카오톡이
+    초대 메시지 아래에 'Together 초대' 미리보기 카드를 따로 붙여 말풍선이 두 개가 됩니다.
+    탭 제목은 아래 스크립트가 열린 뒤에 붙입니다(카카오톡의 미리보기 수집기는 스크립트를 돌리지 않습니다).
+  -->
   <meta name="robots" content="noindex" />
   <style>
     :root { --bg: #fff; --text: #2b2b2b; --mute: #8a8a8a; --line: rgba(43,43,43,.06); --btn: #2b2b2b; }
@@ -43,11 +45,28 @@
     // ?join=list&id=…&code=…&t=제목 → com.checklist.app://invite?join=…
     // 안드로이드는 intent:// 주소로 열어야 카카오톡·크롬 안의 브라우저에서 앱으로 넘어갑니다.
     (function () {
+      document.title = 'Together 초대';
       var q = new URLSearchParams(location.search);
       var kind = q.get('join') || '';
       var id = q.get('id') || '';
       var code = q.get('code') || '';
       var title = q.get('t') || '';
+      // 짧은 링크 — ?l=<id 22글자> (c 모임 · l 리스트 · r 알림 · h 습관). id 는 uuid 를 base64url 로 줄인 것.
+      var SHORT = { c: 'circle', l: 'list', r: 'remind', h: 'habit' };
+      for (var k in SHORT) {
+        var v = q.get(k);
+        if (!v) continue;
+        try {
+          var bin = atob(v.replace(/-/g, '+').replace(/_/g, '/'));
+          var hex = '';
+          for (var i = 0; i < bin.length; i++) hex += ('0' + bin.charCodeAt(i).toString(16)).slice(-2);
+          if (hex.length === 32) {
+            kind = SHORT[k];
+            id = hex.slice(0, 8) + '-' + hex.slice(8, 12) + '-' + hex.slice(12, 16) + '-' + hex.slice(16, 20) + '-' + hex.slice(20);
+          }
+        } catch (e) { /* 깨진 링크 — 아래에서 안내합니다 */ }
+        break;
+      }
       var label = { circle: '모임', list: '리스트', remind: '알림', habit: '습관' }[kind] || '';
       if (!/^(circle|list|remind|habit)$/.test(kind) || !id) {
         document.getElementById('sub').textContent = '초대 정보가 없어요. 받은 메시지를 다시 확인해 주세요.';
